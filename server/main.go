@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	rpc "github.com/dearing/mud/rpc"
+	rpc "github.com/dearing/mud"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -16,13 +16,20 @@ const (
 	port = ":50051"
 )
 
+var version = "1"
+var commit = ""
+
 type server struct{}
 
-func (s *server) Message(ctx context.Context, in *rpc.MessageRequest) (*rpc.MessageReply, error) {
-	return &rpc.MessageReply{Message: "Hello " + in.Message}, nil
+func (s *server) Echo(ctx context.Context, in *rpc.MessageRequest) (*rpc.MessageReply, error) {
+	log.Printf("SERVER: %s", in.Message)
+	return &rpc.MessageReply{Message: in.Message}, nil
 }
 
 func main() {
+
+	log.Printf("MUD v:%s c:%s", version, commit)
+
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

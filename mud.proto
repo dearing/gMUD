@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package rpc;
+package mud;
 
 // The greeting service definition.
 service Messaging {
   // Sends a greeting
-  rpc Message (MessageRequest) returns (MessageReply) {}
+  rpc Echo (MessageRequest) returns (MessageReply) {}
 }
 
 message MessageRequest {
