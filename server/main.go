@@ -3,11 +3,11 @@
 package main
 
 import (
+	"io"
 	"log"
 	"net"
 
-	rpc "github.com/dearing/mud"
-	"golang.org/x/net/context"
+	mud "github.com/dearing/mud"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -16,14 +16,27 @@ const (
 	port = ":50051"
 )
 
-var version = "1"
+var version = "1.1"
 var commit = ""
 
 type server struct{}
 
-func (s *server) Echo(ctx context.Context, in *rpc.MessageRequest) (*rpc.MessageReply, error) {
-	log.Printf("SERVER: %s", in.Message)
-	return &rpc.MessageReply{Message: in.Message}, nil
+func (s *server) Echo(stream mud.Messaging_EchoServer) (err error) {
+	for {
+		in, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		log.Printf("CLIENT: %s", in.Message)
+
+		if err := stream.Send(&mud.MessageReply{Message: in.Message}); err != nil {
+			return err
+		}
+	}
 }
 
 func main() {
@@ -35,7 +48,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	rpc.RegisterMessagingServer(s, &server{})
+	mud.RegisterMessagingServer(s, &server{})
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
 	if err := s.Serve(lis); err != nil {

@@ -108,15 +108,15 @@ func init() {
 func init() { proto.RegisterFile("mud.proto", fileDescriptor_332afdaf9af33408) }
 
 var fileDescriptor_332afdaf9af33408 = []byte{
-	// 124 bytes of a gzipped FileDescriptorProto
+	// 128 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcc, 0x2d, 0x4d, 0xd1,
 	0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xce, 0x2d, 0x4d, 0x51, 0xd2, 0xe2, 0xe2, 0xf3, 0x4d,
 	0x2d, 0x2e, 0x4e, 0x4c, 0x4f, 0x0d, 0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0x11, 0x92, 0xe0, 0x62,
 	0xcf, 0x85, 0x88, 0x48, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x06, 0xc1, 0xb8, 0x4a, 0x1a, 0x5c, 0x3c,
-	0x70, 0xb5, 0x05, 0x39, 0x95, 0xb8, 0x55, 0x1a, 0xd9, 0x72, 0x71, 0x42, 0x54, 0x66, 0xe6, 0xa5,
-	0x0b, 0x19, 0x70, 0xb1, 0xb8, 0x26, 0x67, 0xe4, 0x0b, 0x09, 0xeb, 0x81, 0xec, 0x46, 0xb5, 0x4d,
-	0x4a, 0x10, 0x55, 0xb0, 0x20, 0xa7, 0x52, 0x89, 0x21, 0x89, 0x0d, 0xec, 0x40, 0x63, 0x40, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x58, 0x64, 0xd6, 0x0f, 0xad, 0x00, 0x00, 0x00,
+	0x70, 0xb5, 0x05, 0x39, 0x95, 0xb8, 0x55, 0x1a, 0x39, 0x72, 0x71, 0x42, 0x54, 0x66, 0xe6, 0xa5,
+	0x0b, 0x99, 0x70, 0xb1, 0xb8, 0x26, 0x67, 0xe4, 0x0b, 0x09, 0xeb, 0x81, 0xec, 0x46, 0xb5, 0x4d,
+	0x4a, 0x10, 0x55, 0xb0, 0x20, 0xa7, 0x52, 0x89, 0x41, 0x83, 0xd1, 0x80, 0x31, 0x89, 0x0d, 0xec,
+	0x48, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0xe1, 0x20, 0x6e, 0x33, 0xb1, 0x00, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -131,8 +131,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MessagingClient interface {
-	// Sends a greeting
-	Echo(ctx context.Context, in *MessageRequest, opts ...grpc.CallOption) (*MessageReply, error)
+	Echo(ctx context.Context, opts ...grpc.CallOption) (Messaging_EchoClient, error)
 }
 
 type messagingClient struct {
@@ -143,52 +142,83 @@ func NewMessagingClient(cc *grpc.ClientConn) MessagingClient {
 	return &messagingClient{cc}
 }
 
-func (c *messagingClient) Echo(ctx context.Context, in *MessageRequest, opts ...grpc.CallOption) (*MessageReply, error) {
-	out := new(MessageReply)
-	err := c.cc.Invoke(ctx, "/mud.Messaging/Echo", in, out, opts...)
+func (c *messagingClient) Echo(ctx context.Context, opts ...grpc.CallOption) (Messaging_EchoClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Messaging_serviceDesc.Streams[0], "/mud.Messaging/Echo", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &messagingEchoClient{stream}
+	return x, nil
+}
+
+type Messaging_EchoClient interface {
+	Send(*MessageRequest) error
+	Recv() (*MessageReply, error)
+	grpc.ClientStream
+}
+
+type messagingEchoClient struct {
+	grpc.ClientStream
+}
+
+func (x *messagingEchoClient) Send(m *MessageRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *messagingEchoClient) Recv() (*MessageReply, error) {
+	m := new(MessageReply)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // MessagingServer is the server API for Messaging service.
 type MessagingServer interface {
-	// Sends a greeting
-	Echo(context.Context, *MessageRequest) (*MessageReply, error)
+	Echo(Messaging_EchoServer) error
 }
 
 func RegisterMessagingServer(s *grpc.Server, srv MessagingServer) {
 	s.RegisterService(&_Messaging_serviceDesc, srv)
 }
 
-func _Messaging_Echo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MessageRequest)
-	if err := dec(in); err != nil {
+func _Messaging_Echo_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(MessagingServer).Echo(&messagingEchoServer{stream})
+}
+
+type Messaging_EchoServer interface {
+	Send(*MessageReply) error
+	Recv() (*MessageRequest, error)
+	grpc.ServerStream
+}
+
+type messagingEchoServer struct {
+	grpc.ServerStream
+}
+
+func (x *messagingEchoServer) Send(m *MessageReply) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *messagingEchoServer) Recv() (*MessageRequest, error) {
+	m := new(MessageRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
-	if interceptor == nil {
-		return srv.(MessagingServer).Echo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/mud.Messaging/Echo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MessagingServer).Echo(ctx, req.(*MessageRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return m, nil
 }
 
 var _Messaging_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "mud.Messaging",
 	HandlerType: (*MessagingServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "Echo",
-			Handler:    _Messaging_Echo_Handler,
+			StreamName:    "Echo",
+			Handler:       _Messaging_Echo_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "mud.proto",
 }
