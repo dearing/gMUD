@@ -22,101 +22,311 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type MessageRequest struct {
+type Action_Type int32
+
+const (
+	Action_SAY   Action_Type = 0
+	Action_EMOTE Action_Type = 1
+	Action_LOOK  Action_Type = 2
+)
+
+var Action_Type_name = map[int32]string{
+	0: "SAY",
+	1: "EMOTE",
+	2: "LOOK",
+}
+
+var Action_Type_value = map[string]int32{
+	"SAY":   0,
+	"EMOTE": 1,
+	"LOOK":  2,
+}
+
+func (x Action_Type) String() string {
+	return proto.EnumName(Action_Type_name, int32(x))
+}
+
+func (Action_Type) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_332afdaf9af33408, []int{3, 0}
+}
+
+type Message struct {
 	Message              string   `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *MessageRequest) Reset()         { *m = MessageRequest{} }
-func (m *MessageRequest) String() string { return proto.CompactTextString(m) }
-func (*MessageRequest) ProtoMessage()    {}
-func (*MessageRequest) Descriptor() ([]byte, []int) {
+func (m *Message) Reset()         { *m = Message{} }
+func (m *Message) String() string { return proto.CompactTextString(m) }
+func (*Message) ProtoMessage()    {}
+func (*Message) Descriptor() ([]byte, []int) {
 	return fileDescriptor_332afdaf9af33408, []int{0}
 }
 
-func (m *MessageRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_MessageRequest.Unmarshal(m, b)
+func (m *Message) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Message.Unmarshal(m, b)
 }
-func (m *MessageRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_MessageRequest.Marshal(b, m, deterministic)
+func (m *Message) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Message.Marshal(b, m, deterministic)
 }
-func (m *MessageRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MessageRequest.Merge(m, src)
+func (m *Message) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Message.Merge(m, src)
 }
-func (m *MessageRequest) XXX_Size() int {
-	return xxx_messageInfo_MessageRequest.Size(m)
+func (m *Message) XXX_Size() int {
+	return xxx_messageInfo_Message.Size(m)
 }
-func (m *MessageRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MessageRequest.DiscardUnknown(m)
+func (m *Message) XXX_DiscardUnknown() {
+	xxx_messageInfo_Message.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MessageRequest proto.InternalMessageInfo
+var xxx_messageInfo_Message proto.InternalMessageInfo
 
-func (m *MessageRequest) GetMessage() string {
+func (m *Message) GetMessage() string {
 	if m != nil {
 		return m.Message
 	}
 	return ""
 }
 
-type MessageReply struct {
-	Message              string   `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+type Token struct {
+	Uuid                 string   `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Expires              string   `protobuf:"bytes,2,opt,name=expires,proto3" json:"expires,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *MessageReply) Reset()         { *m = MessageReply{} }
-func (m *MessageReply) String() string { return proto.CompactTextString(m) }
-func (*MessageReply) ProtoMessage()    {}
-func (*MessageReply) Descriptor() ([]byte, []int) {
+func (m *Token) Reset()         { *m = Token{} }
+func (m *Token) String() string { return proto.CompactTextString(m) }
+func (*Token) ProtoMessage()    {}
+func (*Token) Descriptor() ([]byte, []int) {
 	return fileDescriptor_332afdaf9af33408, []int{1}
 }
 
-func (m *MessageReply) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_MessageReply.Unmarshal(m, b)
+func (m *Token) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Token.Unmarshal(m, b)
 }
-func (m *MessageReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_MessageReply.Marshal(b, m, deterministic)
+func (m *Token) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Token.Marshal(b, m, deterministic)
 }
-func (m *MessageReply) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MessageReply.Merge(m, src)
+func (m *Token) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Token.Merge(m, src)
 }
-func (m *MessageReply) XXX_Size() int {
-	return xxx_messageInfo_MessageReply.Size(m)
+func (m *Token) XXX_Size() int {
+	return xxx_messageInfo_Token.Size(m)
 }
-func (m *MessageReply) XXX_DiscardUnknown() {
-	xxx_messageInfo_MessageReply.DiscardUnknown(m)
+func (m *Token) XXX_DiscardUnknown() {
+	xxx_messageInfo_Token.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MessageReply proto.InternalMessageInfo
+var xxx_messageInfo_Token proto.InternalMessageInfo
 
-func (m *MessageReply) GetMessage() string {
+func (m *Token) GetUuid() string {
 	if m != nil {
-		return m.Message
+		return m.Uuid
+	}
+	return ""
+}
+
+func (m *Token) GetExpires() string {
+	if m != nil {
+		return m.Expires
+	}
+	return ""
+}
+
+type LoginRequest struct {
+	Username             string   `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LoginRequest) Reset()         { *m = LoginRequest{} }
+func (m *LoginRequest) String() string { return proto.CompactTextString(m) }
+func (*LoginRequest) ProtoMessage()    {}
+func (*LoginRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_332afdaf9af33408, []int{2}
+}
+
+func (m *LoginRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LoginRequest.Unmarshal(m, b)
+}
+func (m *LoginRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LoginRequest.Marshal(b, m, deterministic)
+}
+func (m *LoginRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginRequest.Merge(m, src)
+}
+func (m *LoginRequest) XXX_Size() int {
+	return xxx_messageInfo_LoginRequest.Size(m)
+}
+func (m *LoginRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_LoginRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LoginRequest proto.InternalMessageInfo
+
+func (m *LoginRequest) GetUsername() string {
+	if m != nil {
+		return m.Username
+	}
+	return ""
+}
+
+func (m *LoginRequest) GetPassword() string {
+	if m != nil {
+		return m.Password
+	}
+	return ""
+}
+
+type Action struct {
+	Action               Action_Type `protobuf:"varint,1,opt,name=action,proto3,enum=mud.Action_Type" json:"action,omitempty"`
+	Argument             []string    `protobuf:"bytes,2,rep,name=argument,proto3" json:"argument,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *Action) Reset()         { *m = Action{} }
+func (m *Action) String() string { return proto.CompactTextString(m) }
+func (*Action) ProtoMessage()    {}
+func (*Action) Descriptor() ([]byte, []int) {
+	return fileDescriptor_332afdaf9af33408, []int{3}
+}
+
+func (m *Action) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Action.Unmarshal(m, b)
+}
+func (m *Action) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Action.Marshal(b, m, deterministic)
+}
+func (m *Action) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Action.Merge(m, src)
+}
+func (m *Action) XXX_Size() int {
+	return xxx_messageInfo_Action.Size(m)
+}
+func (m *Action) XXX_DiscardUnknown() {
+	xxx_messageInfo_Action.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Action proto.InternalMessageInfo
+
+func (m *Action) GetAction() Action_Type {
+	if m != nil {
+		return m.Action
+	}
+	return Action_SAY
+}
+
+func (m *Action) GetArgument() []string {
+	if m != nil {
+		return m.Argument
+	}
+	return nil
+}
+
+type Player struct {
+	Uuid                 string   `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Username             string   `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Name                 string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Description          string   `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Player) Reset()         { *m = Player{} }
+func (m *Player) String() string { return proto.CompactTextString(m) }
+func (*Player) ProtoMessage()    {}
+func (*Player) Descriptor() ([]byte, []int) {
+	return fileDescriptor_332afdaf9af33408, []int{4}
+}
+
+func (m *Player) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Player.Unmarshal(m, b)
+}
+func (m *Player) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Player.Marshal(b, m, deterministic)
+}
+func (m *Player) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Player.Merge(m, src)
+}
+func (m *Player) XXX_Size() int {
+	return xxx_messageInfo_Player.Size(m)
+}
+func (m *Player) XXX_DiscardUnknown() {
+	xxx_messageInfo_Player.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Player proto.InternalMessageInfo
+
+func (m *Player) GetUuid() string {
+	if m != nil {
+		return m.Uuid
+	}
+	return ""
+}
+
+func (m *Player) GetUsername() string {
+	if m != nil {
+		return m.Username
+	}
+	return ""
+}
+
+func (m *Player) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Player) GetDescription() string {
+	if m != nil {
+		return m.Description
 	}
 	return ""
 }
 
 func init() {
-	proto.RegisterType((*MessageRequest)(nil), "mud.MessageRequest")
-	proto.RegisterType((*MessageReply)(nil), "mud.MessageReply")
+	proto.RegisterEnum("mud.Action_Type", Action_Type_name, Action_Type_value)
+	proto.RegisterType((*Message)(nil), "mud.Message")
+	proto.RegisterType((*Token)(nil), "mud.Token")
+	proto.RegisterType((*LoginRequest)(nil), "mud.LoginRequest")
+	proto.RegisterType((*Action)(nil), "mud.Action")
+	proto.RegisterType((*Player)(nil), "mud.Player")
 }
 
 func init() { proto.RegisterFile("mud.proto", fileDescriptor_332afdaf9af33408) }
 
 var fileDescriptor_332afdaf9af33408 = []byte{
-	// 128 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcc, 0x2d, 0x4d, 0xd1,
-	0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xce, 0x2d, 0x4d, 0x51, 0xd2, 0xe2, 0xe2, 0xf3, 0x4d,
-	0x2d, 0x2e, 0x4e, 0x4c, 0x4f, 0x0d, 0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0x11, 0x92, 0xe0, 0x62,
-	0xcf, 0x85, 0x88, 0x48, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x06, 0xc1, 0xb8, 0x4a, 0x1a, 0x5c, 0x3c,
-	0x70, 0xb5, 0x05, 0x39, 0x95, 0xb8, 0x55, 0x1a, 0x39, 0x72, 0x71, 0x42, 0x54, 0x66, 0xe6, 0xa5,
-	0x0b, 0x99, 0x70, 0xb1, 0xb8, 0x26, 0x67, 0xe4, 0x0b, 0x09, 0xeb, 0x81, 0xec, 0x46, 0xb5, 0x4d,
-	0x4a, 0x10, 0x55, 0xb0, 0x20, 0xa7, 0x52, 0x89, 0x41, 0x83, 0xd1, 0x80, 0x31, 0x89, 0x0d, 0xec,
-	0x48, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0xe1, 0x20, 0x6e, 0x33, 0xb1, 0x00, 0x00, 0x00,
+	// 332 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x52, 0xcd, 0x4f, 0xea, 0x40,
+	0x10, 0xa7, 0x9f, 0xc0, 0x40, 0x5e, 0xfa, 0xe6, 0xd4, 0xf4, 0x44, 0xf6, 0xbd, 0xc4, 0x9e, 0x88,
+	0xc1, 0xf8, 0x07, 0x10, 0x83, 0x1e, 0x84, 0xa0, 0xc8, 0xc5, 0xe3, 0x4a, 0x27, 0xd8, 0x68, 0x3f,
+	0xdc, 0xed, 0x46, 0x39, 0xfb, 0x8f, 0x9b, 0xdd, 0x2d, 0xa4, 0x1a, 0x6f, 0xf3, 0xfb, 0x98, 0x69,
+	0x7f, 0x33, 0x0b, 0xc3, 0x42, 0x65, 0xd3, 0x5a, 0x54, 0x4d, 0x85, 0x5e, 0xa1, 0x32, 0xf6, 0x0f,
+	0xfa, 0x2b, 0x92, 0x92, 0xef, 0x09, 0x63, 0xe8, 0x17, 0xb6, 0x8c, 0x9d, 0x89, 0x93, 0x0e, 0x37,
+	0x47, 0xc8, 0x2e, 0x21, 0xd8, 0x56, 0x2f, 0x54, 0x22, 0x82, 0xaf, 0x54, 0x9e, 0xb5, 0xba, 0xa9,
+	0x75, 0x1b, 0x7d, 0xd4, 0xb9, 0x20, 0x19, 0xbb, 0xb6, 0xad, 0x85, 0xec, 0x1a, 0xc6, 0xcb, 0x6a,
+	0x9f, 0x97, 0x1b, 0x7a, 0x53, 0x24, 0x1b, 0x4c, 0x60, 0xa0, 0x24, 0x89, 0x92, 0x17, 0xc7, 0x2f,
+	0x9c, 0xb0, 0xd6, 0x6a, 0x2e, 0xe5, 0x7b, 0x25, 0xb2, 0x76, 0xcc, 0x09, 0xb3, 0x06, 0xc2, 0xf9,
+	0xae, 0xc9, 0xab, 0x12, 0x53, 0x08, 0xb9, 0xa9, 0x4c, 0xff, 0x9f, 0x59, 0x34, 0xd5, 0x71, 0xac,
+	0x38, 0xdd, 0x1e, 0x6a, 0xda, 0xb4, 0xba, 0x9e, 0xc7, 0xc5, 0x5e, 0x15, 0x54, 0x36, 0xb1, 0x3b,
+	0xf1, 0xf4, 0xbc, 0x23, 0x66, 0xff, 0xc1, 0xd7, 0x5e, 0xec, 0x83, 0xf7, 0x30, 0x7f, 0x8c, 0x7a,
+	0x38, 0x84, 0x60, 0xb1, 0x5a, 0x6f, 0x17, 0x91, 0x83, 0x03, 0xf0, 0x97, 0xeb, 0xf5, 0x6d, 0xe4,
+	0xb2, 0x12, 0xc2, 0xbb, 0x57, 0x7e, 0x20, 0xf1, 0x6b, 0xea, 0x6e, 0x16, 0xf7, 0x47, 0x16, 0x04,
+	0xdf, 0xf0, 0x9e, 0xf5, 0x1b, 0x6e, 0x02, 0xa3, 0x8c, 0xe4, 0x4e, 0xe4, 0xb5, 0xf9, 0x7d, 0xdf,
+	0x48, 0x5d, 0x6a, 0xf6, 0xe9, 0x80, 0x7f, 0xa3, 0xad, 0x29, 0x04, 0x66, 0x6d, 0xf8, 0xd7, 0xa4,
+	0xeb, 0xae, 0x30, 0x01, 0x43, 0x99, 0x63, 0xb0, 0x1e, 0xa6, 0xe0, 0x5f, 0x3d, 0xf3, 0x06, 0xc7,
+	0x86, 0x6d, 0xef, 0x98, 0x7c, 0x43, 0xac, 0x97, 0x3a, 0xe7, 0x0e, 0x9e, 0x41, 0x70, 0xaf, 0x48,
+	0x11, 0x8e, 0x3a, 0x1b, 0x4b, 0x2c, 0xb0, 0x29, 0xad, 0xf1, 0x29, 0x34, 0x6f, 0xe3, 0xe2, 0x2b,
+	0x00, 0x00, 0xff, 0xff, 0x15, 0x6b, 0x61, 0xc3, 0x28, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -127,95 +337,194 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// MessagingClient is the client API for Messaging service.
+// GameClient is the client API for Game service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MessagingClient interface {
-	Echo(ctx context.Context, opts ...grpc.CallOption) (Messaging_EchoClient, error)
+type GameClient interface {
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Token, error)
+	Chat(ctx context.Context, opts ...grpc.CallOption) (Game_ChatClient, error)
+	Queue(ctx context.Context, opts ...grpc.CallOption) (Game_QueueClient, error)
 }
 
-type messagingClient struct {
+type gameClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewMessagingClient(cc *grpc.ClientConn) MessagingClient {
-	return &messagingClient{cc}
+func NewGameClient(cc *grpc.ClientConn) GameClient {
+	return &gameClient{cc}
 }
 
-func (c *messagingClient) Echo(ctx context.Context, opts ...grpc.CallOption) (Messaging_EchoClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Messaging_serviceDesc.Streams[0], "/mud.Messaging/Echo", opts...)
+func (c *gameClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Token, error) {
+	out := new(Token)
+	err := c.cc.Invoke(ctx, "/mud.Game/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &messagingEchoClient{stream}
+	return out, nil
+}
+
+func (c *gameClient) Chat(ctx context.Context, opts ...grpc.CallOption) (Game_ChatClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Game_serviceDesc.Streams[0], "/mud.Game/Chat", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &gameChatClient{stream}
 	return x, nil
 }
 
-type Messaging_EchoClient interface {
-	Send(*MessageRequest) error
-	Recv() (*MessageReply, error)
+type Game_ChatClient interface {
+	Send(*Message) error
+	Recv() (*Message, error)
 	grpc.ClientStream
 }
 
-type messagingEchoClient struct {
+type gameChatClient struct {
 	grpc.ClientStream
 }
 
-func (x *messagingEchoClient) Send(m *MessageRequest) error {
+func (x *gameChatClient) Send(m *Message) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *messagingEchoClient) Recv() (*MessageReply, error) {
-	m := new(MessageReply)
+func (x *gameChatClient) Recv() (*Message, error) {
+	m := new(Message)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// MessagingServer is the server API for Messaging service.
-type MessagingServer interface {
-	Echo(Messaging_EchoServer) error
+func (c *gameClient) Queue(ctx context.Context, opts ...grpc.CallOption) (Game_QueueClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Game_serviceDesc.Streams[1], "/mud.Game/Queue", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &gameQueueClient{stream}
+	return x, nil
 }
 
-func RegisterMessagingServer(s *grpc.Server, srv MessagingServer) {
-	s.RegisterService(&_Messaging_serviceDesc, srv)
+type Game_QueueClient interface {
+	Send(*Action) error
+	Recv() (*Player, error)
+	grpc.ClientStream
 }
 
-func _Messaging_Echo_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(MessagingServer).Echo(&messagingEchoServer{stream})
+type gameQueueClient struct {
+	grpc.ClientStream
 }
 
-type Messaging_EchoServer interface {
-	Send(*MessageReply) error
-	Recv() (*MessageRequest, error)
+func (x *gameQueueClient) Send(m *Action) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *gameQueueClient) Recv() (*Player, error) {
+	m := new(Player)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// GameServer is the server API for Game service.
+type GameServer interface {
+	Login(context.Context, *LoginRequest) (*Token, error)
+	Chat(Game_ChatServer) error
+	Queue(Game_QueueServer) error
+}
+
+func RegisterGameServer(s *grpc.Server, srv GameServer) {
+	s.RegisterService(&_Game_serviceDesc, srv)
+}
+
+func _Game_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mud.Game/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Game_Chat_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(GameServer).Chat(&gameChatServer{stream})
+}
+
+type Game_ChatServer interface {
+	Send(*Message) error
+	Recv() (*Message, error)
 	grpc.ServerStream
 }
 
-type messagingEchoServer struct {
+type gameChatServer struct {
 	grpc.ServerStream
 }
 
-func (x *messagingEchoServer) Send(m *MessageReply) error {
+func (x *gameChatServer) Send(m *Message) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *messagingEchoServer) Recv() (*MessageRequest, error) {
-	m := new(MessageRequest)
+func (x *gameChatServer) Recv() (*Message, error) {
+	m := new(Message)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-var _Messaging_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "mud.Messaging",
-	HandlerType: (*MessagingServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+func _Game_Queue_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(GameServer).Queue(&gameQueueServer{stream})
+}
+
+type Game_QueueServer interface {
+	Send(*Player) error
+	Recv() (*Action, error)
+	grpc.ServerStream
+}
+
+type gameQueueServer struct {
+	grpc.ServerStream
+}
+
+func (x *gameQueueServer) Send(m *Player) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *gameQueueServer) Recv() (*Action, error) {
+	m := new(Action)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+var _Game_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "mud.Game",
+	HandlerType: (*GameServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Login",
+			Handler:    _Game_Login_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Echo",
-			Handler:       _Messaging_Echo_Handler,
+			StreamName:    "Chat",
+			Handler:       _Game_Chat_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "Queue",
+			Handler:       _Game_Queue_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

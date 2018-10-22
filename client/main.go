@@ -11,12 +11,13 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 
 	"github.com/dearing/mud"
 )
 
 var (
-	version = "1.3"
+	version = "1.4"
 	commit  = ""
 	addr    = flag.String("addr", "localhost:50051", "MUD server address")
 	crt     = flag.String("crt", "./misc/localhost.crt", "MUD server cert")
@@ -24,11 +25,17 @@ var (
 
 type client struct{}
 
-func echo(client mud.MessagingClient) {
+var session_token string
 
-	stream, err := client.Echo(context.Background())
+func chat(client mud.GameClient) {
+
+	md := metadata.Pairs("token", session_token)
+
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+
+	stream, err := client.Chat(ctx)
 	if err != nil {
-		log.Fatalf("%+v.Echo: %v", client, err)
+		log.Fatalf("%+v.CHAT: %v", client, err)
 	}
 	waitc := make(chan struct{})
 	go func() {
@@ -52,13 +59,27 @@ func echo(client mud.MessagingClient) {
 		if text == "exit" {
 			break
 		}
-		if err := stream.Send(&mud.MessageRequest{Message: text}); err != nil {
+		if err := stream.Send(&mud.Message{Message: text}); err != nil {
 			log.Fatalf("Failed to send a message: %v", err)
 		}
 	}
 	stream.CloseSend()
 	<-waitc
 }
+
+func login(client mud.GameClient) (err error) {
+
+	token, err := client.Login(context.Background(), &mud.LoginRequest{
+		Username: "admin",
+		Password: "password",
+	})
+
+	session_token = token.Uuid
+
+	return
+}
+
+var player *mud.Player
 
 func main() {
 
@@ -76,8 +97,15 @@ func main() {
 	}
 	defer conn.Close()
 
-	mudClient := mud.NewMessagingClient(conn)
+	mudClient := mud.NewGameClient(conn)
 
-	echo(mudClient)
+	err = login(mudClient)
+	if err != nil {
+		log.Fatalf("Failed to login! %v", err)
+	} else {
+		log.Printf("TOKEN: %v", session_token)
+	}
+
+	chat(mudClient)
 
 }

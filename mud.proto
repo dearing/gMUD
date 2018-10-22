@@ -2,14 +2,39 @@ syntax = "proto3";
 
 package mud;
 
-// The greeting service definition.
-service Messaging {
-  rpc Echo(stream MessageRequest) returns (stream MessageReply) {}
+service Game {
+  rpc Login(LoginRequest) returns (Token) {}
+  rpc Chat(stream Message) returns (stream Message) {}
+  rpc Queue(stream Action) returns (stream Player) {}
 }
 
-message MessageRequest {
+message Message {
     string message = 1;
 }
-message MessageReply {
-    string message = 1;
+
+message Token {
+    string uuid = 1;
+    string expires = 2;
+}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message Action {
+    enum Type {
+        SAY = 0;
+        EMOTE = 1;
+        LOOK = 2;
+    }
+    Type action = 1;
+    repeated string argument = 2;
+}
+
+message Player {
+    string uuid = 1;
+    string username = 2;
+    string name = 3;
+    string description = 4;
 }
