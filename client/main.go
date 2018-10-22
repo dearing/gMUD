@@ -3,23 +3,24 @@ package main
 import (
 	"bufio"
 	"context"
+	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/dearing/mud"
 )
 
-const (
-	address     = "localhost:50051"
-	defaultName = "world"
+var (
+	version = "1.3"
+	commit  = ""
+	addr    = flag.String("addr", "localhost:50051", "MUD server address")
+	crt     = flag.String("crt", "./misc/server.crt", "MUD server cert")
 )
-
-var version = "1.1"
-var commit = ""
 
 type client struct{}
 
@@ -27,7 +28,7 @@ func echo(client mud.MessagingClient) {
 
 	stream, err := client.Echo(context.Background())
 	if err != nil {
-		log.Fatalf("%v.Echo(_) = _, %v", client, err)
+		log.Fatalf("%+v.Echo: %v", client, err)
 	}
 	waitc := make(chan struct{})
 	go func() {
@@ -39,7 +40,7 @@ func echo(client mud.MessagingClient) {
 				return
 			}
 			if err != nil {
-				log.Fatalf("Failed to receive a note : %v", err)
+				log.Fatalf("Failed to receive a message : %v", err)
 			}
 			log.Printf("SERVER: %s\n", in.Message)
 		}
@@ -62,8 +63,14 @@ func echo(client mud.MessagingClient) {
 func main() {
 
 	log.Printf("MUD v%s c:%s", version, commit)
+	flag.Parse()
 
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	creds, err := credentials.NewClientTLSFromFile(*crt, "")
+	if err != nil {
+		log.Fatalf("could not load tls cert: %s", err)
+	}
+
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
