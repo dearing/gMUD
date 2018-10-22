@@ -19,7 +19,7 @@ var (
 	version = "1.3"
 	commit  = ""
 	addr    = flag.String("addr", "localhost:50051", "MUD server address")
-	crt     = flag.String("crt", "./misc/server.crt", "MUD server cert")
+	crt     = flag.String("crt", "./misc/localhost.crt", "MUD server cert")
 )
 
 type client struct{}
