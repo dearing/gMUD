@@ -18,7 +18,6 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 )
@@ -150,19 +149,25 @@ func main() {
 
 	log.Printf("Players loaded.\n %+v", players)
 
-	creds, err := credentials.NewServerTLSFromFile(*crt, *key)
-	if err != nil {
-		log.Fatalf("could not load TLS keys: %s", err)
-	}
+	// creds, err := credentials.NewServerTLSFromFile(*crt, *key)
+	// if err != nil {
+	// 	log.Fatalf("could not load TLS keys: %s", err)
+	// }
 
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer(grpc.Creds(creds),
+	// s := grpc.NewServer(grpc.Creds(creds),
+	// 	grpc.StreamInterceptor(streamInterceptor),
+	// 	grpc.UnaryInterceptor(unaryInterceptor),
+	// )
+
+	s := grpc.NewServer(
 		grpc.StreamInterceptor(streamInterceptor),
 		grpc.UnaryInterceptor(unaryInterceptor),
 	)
+
 	mud.RegisterGameServer(s, &server{})
 	// Register reflection service on gRPC server.
 	reflection.Register(s)

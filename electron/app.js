@@ -1,17 +1,8 @@
-import 'package:angular/angular.dart';
-import 'dart:convert';
-import 'src/todo_list/todo_list_component.dart';
-import 'package:grpc/grpc.dart';
-import 'src/generated/mud.pb.dart';
-import 'src/generated/mud.pbenum.dart';
-import 'src/generated/mud.pbgrpc.dart';
-import 'src/generated/mud.pbjson.dart';
-// AngularDart info: https://webdev.dartlang.org/angular
-// Components info: https://webdev.dartlang.org/components
+var ser = require('./mud_grpc_pb')
+var mes = require('./mud_pb');
+var grpc = require('grpc');
 
-
-var cert = '''
------BEGIN RSA PRIVATE KEY-----
+var cert = `-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA3uVQ2ljrGMqM0zy5JF9xLsShfaj8rY4kvIqlCciOEzw1OMtx
 E1JPWoVQx29NLMnzETFANTcfEaFwMStVBBSsaQNzb7srmadi2gUhOJDUvOSmBgpT
 Yls6cDQ0izPS/VDznSX6qcuCc4c1/FI9PVprOTGyPHd/A6d35fr+KYZrIa+4J7pt
@@ -37,36 +28,14 @@ APRQNzKkPPldZKFCe0IoGU3nDBBuT6Ilo35J8R4BSuq80sm5+2Jes9cK4RnY/9li
 hk78YzECgYAzJUSN8NaY9HGJvvxo4p+qzHeyUI8NFRJmwm7mfM7tzPdOXeOwVAeY
 yHsbOxsWpxGWH0xlU+qYcI/oFGZmdma/GjivHPA4i2KqfRQPJN7dor0rTD7F8e7G
 K5FH5aM7s4zIrMQATgdYIVnpP063ETaiUspyxbmpAdJ56uCHjmAJww==
------END RSA PRIVATE KEY-----
-''';
-
-final trustedRoot = utf8.encode(cert);
-final channelCredentials = new ChannelCredentials.secure(certificates: trustedRoot);
-final channelOptions = new ChannelOptions(credentials: channelCredentials);
-final channel = new ClientChannel('localhost', port: 50051, options: channelOptions);
-final client = new GameClient(channel);
-final loginR = new LoginRequest()
-  ..username = "admin"
-  ..password = "password";
-
-//client.login(loginR);
+-----END RSA PRIVATE KEY-----`
 
 
-@Component(
-  selector: 'my-app',
-  styleUrls: ['app_component.css'],
-  templateUrl: 'app_component.html',
-  directives: [TodoListComponent],
-)
-class AppComponent {
-  var t = client.login(loginR);
-}
-
-
-// final channel = new ClientChannel('localhost',
-//     port: 50051,
-//     options: const ChannelOptions(
-//         credentials: const ChannelCredentials.insecure()));
-// final stub = new GameClient(channel);
-
+//var ssl_creds = grpc.credentials.createSsl(Buffer.from(cert, 'utf8'));
+var client = new ser.GameClient('localhost:50051', grpc.credentials.createInsecure());
+var request = new mes.LoginRequest();
+request.setUsername("admin");
+request.setPassword("password");
+console.log(request)
+var r = client.login(request, function (err, response) {console.log(err, response);});
 

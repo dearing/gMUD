@@ -37,4 +37,6 @@ protoc --proto_path=. --csharp_out .\  .\mud.proto
 ```
 cd ..
 protoc --proto_path=. --js_out=library=mud_client,binary:web/js .\mud.proto
+protoc --js_out=import_style=commonjs,binary:. messages.proto base.proto
+grpc_tools_node_protoc --js_out=import_style=commonjs,binary:. --grpc_out=. mud.proto
 ```

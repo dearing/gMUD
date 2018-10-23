@@ -17,6 +17,15 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^3.0.4"
+    "@grpc/proto-loader": "^0.1.0",
+    "async": "^1.5.2",
+    "electron": "^3.0.4",
+    "google-protobuf": "^3.6.1",
+    "grpc": "^1.11.0",
+    "lodash": "^4.6.1",
+    "minimist": "^1.2.0"
+  },
+  "dependencies": {
+    "google-closure-library": "^20180910.0.0"
   }
 }
