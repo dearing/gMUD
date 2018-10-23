@@ -28,7 +28,7 @@ const (
 )
 
 var (
-	version = "1.5"
+	version = "1.6"
 	commit  = ""
 	addr    = flag.String("addr", ":50051", "MUD server address")
 	crt     = flag.String("crt", "./misc/localhost.crt", "MUD server cert")
