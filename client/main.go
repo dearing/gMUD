@@ -12,7 +12,6 @@ import (
 	"github.com/dearing/mud"
 	"github.com/jroimartin/gocui"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -128,12 +127,13 @@ func main() {
 	log.Printf("MUD v%s c:%s", version, commit)
 	flag.Parse()
 
-	creds, err := credentials.NewClientTLSFromFile(*crt, "")
-	if err != nil {
-		log.Fatalf("could not load tls cert: %s", err)
-	}
+	// creds, err := credentials.NewClientTLSFromFile(*crt, "")
+	// if err != nil {
+	// 	log.Fatalf("could not load tls cert: %s", err)
+	// }
 
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(creds))
+	//conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(creds))
+	conn, err := grpc.Dial(*addr, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -148,21 +148,21 @@ func main() {
 		log.Printf("TOKEN: %v", sessionToken)
 	}
 
-	g, err := gocui.NewGui(gocui.OutputNormal)
-	if err != nil {
-		log.Panicln(err)
-	}
-	defer g.Close()
+	// g, err := gocui.NewGui(gocui.OutputNormal)
+	// if err != nil {
+	// 	log.Panicln(err)
+	// }
+	// defer g.Close()
 
-	g.SetManagerFunc(layout)
+	// g.SetManagerFunc(layout)
 
-	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
-		log.Panicln(err)
-	}
+	// if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+	// 	log.Panicln(err)
+	// }
 
-	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
-		log.Panicln(err)
-	}
+	// if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
+	// 	log.Panicln(err)
+	// }
 
 	//chat(mudClient)
 	queue(mudClient)

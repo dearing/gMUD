@@ -37,5 +37,5 @@ var request = new mes.LoginRequest();
 request.setUsername("admin");
 request.setPassword("password");
 console.log(request)
-var r = client.login(request, function (err, response) {console.log(err, response);});
+var r = client.login(request, function (err, response) { console.log(err, response); });
 
