@@ -3,9 +3,9 @@ syntax = "proto3";
 package mud;
 
 service Game {
-  rpc Login(LoginRequest) returns (Token) {}
-  rpc Chat(stream Message) returns (stream Message) {}
-  rpc Queue(stream Action) returns (stream Player) {}
+    rpc Login(LoginRequest) returns (Token) {}
+    rpc Chat(stream Message) returns (stream Message) {}
+    rpc Queue(stream Action) returns (stream Player) {}
 }
 
 message Message {
@@ -37,4 +37,6 @@ message Player {
     string username = 2;
     string name = 3;
     string description = 4;
+    uint64 logins = 5;
 }
+

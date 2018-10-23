@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	version = "1.4"
+	version = "1.5"
 	commit  = ""
 	addr    = flag.String("addr", "localhost:50051", "MUD server address")
 	crt     = flag.String("crt", "./misc/localhost.crt", "MUD server cert")

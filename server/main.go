@@ -4,9 +4,12 @@ package main
 
 import (
 	"context"
+	"encoding/gob"
 	"flag"
 	"io"
+	"log"
 	"net"
+	"os"
 	"strings"
 	"time"
 
@@ -15,7 +18,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
-	log "google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 )
@@ -25,7 +27,7 @@ const (
 )
 
 var (
-	version = "1.4"
+	version = "1.5"
 	commit  = ""
 	addr    = flag.String("addr", ":50051", "MUD server address")
 	crt     = flag.String("crt", "./misc/localhost.crt", "MUD server cert")
@@ -43,6 +45,26 @@ type session struct {
 
 var players []*mud.Player
 
+func save(filename string) (err error) {
+	file, err := os.Create(filename)
+	defer file.Close()
+	if err == nil {
+		encoder := gob.NewEncoder(file)
+		encoder.Encode(players)
+	}
+	return
+}
+
+func load(filename string) (err error) {
+	file, err := os.Open(filename)
+	defer file.Close()
+	if err == nil {
+		decoder := gob.NewDecoder(file)
+		err = decoder.Decode(&players)
+	}
+	return
+}
+
 func (s *server) Login(context context.Context, request *mud.LoginRequest) (token *mud.Token, err error) {
 
 	uuid := uuid.New()
@@ -56,6 +78,8 @@ func (s *server) Login(context context.Context, request *mud.LoginRequest) (toke
 			token:  token.Uuid,
 			player: players[0],
 		})
+		players[0].Logins++
+		save("./data/players.gob")
 
 	} else {
 		err = status.Errorf(codes.Unauthenticated, "Bad user login.")
@@ -117,12 +141,19 @@ func main() {
 	log.Printf("MUD v:%s c:%s", version, commit)
 	flag.Parse()
 
-	players = append(players, &mud.Player{
-		Uuid:        "0000-0000-0000-000",
-		Username:    "admin",
-		Name:        "Administrator",
-		Description: "Hard coded Admin of the Game.",
-	})
+	// players = append(players, &mud.Player{
+	// 	Uuid:        "0000-0000-0000-000",
+	// 	Username:    "admin",
+	// 	Name:        "Administrator",
+	// 	Description: "Hard coded Admin of the Game.",
+	// })
+
+	err := load("./data/players.gob")
+	if err != nil {
+		log.Fatalf("Error loading players.gob: %v", err)
+	}
+
+	log.Printf("Players loaded.\n %+v", players)
 
 	creds, err := credentials.NewServerTLSFromFile(*crt, *key)
 	if err != nil {
