@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package mud;
 
+import "google/protobuf/timestamp.proto";
+
 service Game {
     rpc Login(LoginRequest) returns (Token) {}
     rpc Chat(stream Message) returns (stream Message) {}
@@ -38,5 +40,7 @@ message Player {
     string name = 3;
     string description = 4;
     uint64 logins = 5;
+    google.protobuf.Timestamp created = 6;
+    google.protobuf.Timestamp last_login = 7;
 }
 

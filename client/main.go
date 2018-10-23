@@ -67,6 +67,48 @@ func chat(client mud.GameClient) {
 	<-waitc
 }
 
+func queue(client mud.GameClient) {
+
+	md := metadata.Pairs("token", sessionToken)
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+
+	stream, err := client.Queue(ctx)
+	if err != nil {
+		log.Fatalf("%+v.QUEUE: %v", client, err)
+	}
+	waitc := make(chan struct{})
+	go func() {
+		for {
+			in, err := stream.Recv()
+			if err == io.EOF {
+				// read done.
+				close(waitc)
+				return
+			}
+			if err != nil {
+				log.Fatalf("Failed to receive a player: %v", err)
+			}
+			log.Printf("\nSERVER: %+v\n", in)
+		}
+	}()
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("\nQUEUE: Enter speech: ")
+		text, _ := reader.ReadString('\n')
+		if text == "exit" {
+			break
+		}
+
+		args := []string{text}
+
+		if err := stream.Send(&mud.Action{Argument: args}); err != nil {
+			log.Fatalf("Failed to send a action: %v", err)
+		}
+	}
+	stream.CloseSend()
+	<-waitc
+}
+
 func login(client mud.GameClient) (err error) {
 
 	token, err := client.Login(context.Background(), &mud.LoginRequest{
@@ -106,6 +148,7 @@ func main() {
 		log.Printf("TOKEN: %v", sessionToken)
 	}
 
-	chat(mudClient)
+	//chat(mudClient)
+	queue(mudClient)
 
 }

@@ -14,6 +14,7 @@ import (
 	"time"
 
 	mud "github.com/dearing/mud"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -78,6 +79,7 @@ func (s *server) Login(context context.Context, request *mud.LoginRequest) (toke
 			token:  token.Uuid,
 			player: players[0],
 		})
+		players[0].LastLogin = ptypes.TimestampNow()
 		players[0].Logins++
 		save("./data/players.gob")
 
@@ -140,13 +142,6 @@ func main() {
 
 	log.Printf("MUD v:%s c:%s", version, commit)
 	flag.Parse()
-
-	// players = append(players, &mud.Player{
-	// 	Uuid:        "0000-0000-0000-000",
-	// 	Username:    "admin",
-	// 	Name:        "Administrator",
-	// 	Description: "Hard coded Admin of the Game.",
-	// })
 
 	err := load("./data/players.gob")
 	if err != nil {
