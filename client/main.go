@@ -25,11 +25,11 @@ var (
 
 type client struct{}
 
-var session_token string
+var sessionToken string
 
 func chat(client mud.GameClient) {
 
-	md := metadata.Pairs("token", session_token)
+	md := metadata.Pairs("token", sessionToken)
 
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
@@ -74,7 +74,7 @@ func login(client mud.GameClient) (err error) {
 		Password: "password",
 	})
 
-	session_token = token.Uuid
+	sessionToken = token.Uuid
 
 	return
 }
@@ -103,7 +103,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to login! %v", err)
 	} else {
-		log.Printf("TOKEN: %v", session_token)
+		log.Printf("TOKEN: %v", sessionToken)
 	}
 
 	chat(mudClient)
