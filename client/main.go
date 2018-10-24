@@ -10,8 +10,6 @@ import (
 	"os"
 
 	"github.com/dearing/mud"
-	"github.com/jroimartin/gocui"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -133,20 +131,6 @@ func main() {
 	// }
 
 	//conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(creds))
-	conn, err := grpc.Dial(*addr, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-
-	mudClient := mud.NewGameClient(conn)
-
-	err = login(mudClient)
-	if err != nil {
-		log.Fatalf("Failed to login! %v", err)
-	} else {
-		log.Printf("TOKEN: %v", sessionToken)
-	}
 
 	// g, err := gocui.NewGui(gocui.OutputNormal)
 	// if err != nil {
@@ -165,20 +149,10 @@ func main() {
 	// }
 
 	//chat(mudClient)
-	queue(mudClient)
-}
 
-func layout(g *gocui.Gui) error {
-	maxX, maxY := g.Size()
-	if v, err := g.SetView("hello", maxX/2-7, maxY/2, maxX/2+7, maxY/2+2); err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
-		}
-		fmt.Fprintln(v, "Hello world!")
-	}
-	return nil
-}
+	//flogin()
+	//testText()
+	testShell()
 
-func quit(g *gocui.Gui, v *gocui.View) error {
-	return gocui.ErrQuit
+	//queue(mudClient)
 }
