@@ -33,7 +33,7 @@ protoc mud.proto --plugin=protoc-gen-dart=c:\Users\JacobDearing\AppData\Roaming\
 protoc --proto_path=. --csharp_out --grpc_out=. .\  .\mud.proto
 ```
 
-Almost forgot the gRPC class, removing the stupid appcache broken stuff to a %PATH% bin
+Almost forgot the gRPC class, removing the stupid appcache broken stuff to a %PATH% bin     
 ```
 protoc.exe --csharp_out Mud --grpc_out Mud .\mud.proto --plugin=protoc-gen-grpc=C:\bin\grpc_csharp_plugin.exe
 ```
